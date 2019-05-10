@@ -1,0 +1,207 @@
+<service-annotation
+  xmlns="http://schemata.org/sws/sesma"
+  xmlns:wsdl="http://schemata.org/sws/wsdl" 
+  xmlns:s="http://foo.com/preds#"
+  url="http://sws.mcm.unisg.ch:8080/axis/services/GigashopService?wsdl"
+  targetNamespace="http://sws.mcm.unisg.ch:8080/axis/services/GigashopService"
+  serviceNamespace="http://sws.mcm.unisg.ch:8080/axis/services/GigashopService"
+  serviceName="GigashopServiceService">
+  
+  <import-voc url="http://elektra.mcm.unisg.ch/wsplan/examples/preds_shopping.xml"/>
+  
+  <functional-profile>
+
+    <op-def name="register" wsdl:portType="GigashopService">
+      <input>
+        <var name="?fn" wsdl:part="firstName" />
+        <var name="?ln" wsdl:part="lastName" />        
+        <var name="?addr" wsdl:part="address" />        
+        <var name="?cntry" wsdl:part="country" />      
+      </input>
+      <precondition>
+        <and>
+          <s:personal-data key="firstname" data="?fn" />
+          <s:personal-data key="lastname" data="?ln" />
+          <s:personal-data key="address" data="?addr" />
+          <s:personal-data key="country" data="?cntry" />
+        </and>
+      </precondition>
+      <output>
+        <var name="?uid" wsdl:part="registerReturn" wsdl:path="UserCredentials/login" />
+        <var name="?pwd" wsdl:part="registerReturn" wsdl:path="UserCredentials/pwd" />        
+      </output>
+      <effect>             
+        <s:user-credentials client="client" server="service2" username="?uid" password="?pwd" />
+      </effect>
+    </op-def>
+
+    <op-def name="login" wsdl:portType="GigashopService">
+      <input>
+        <var name="?uid" wsdl:part="username" />  
+        <var name="?pwd" wsdl:part="password" />
+      </input>
+      <output>
+        <var name="?sid" wsdl:part="loginReturn"/>
+      </output>      
+      <precondition>
+        <s:user-credentials client="client" server="service2" username="?uid" password="?pwd" />
+      </precondition>
+      <effect> 
+        <s:active-session client="client" server="service2" sid="?sid" />
+      </effect>
+    </op-def>
+   
+    <op-def name="getList" wsdl:portType="GigashopService">
+      <output>
+        <var name="?item" wsdl:part="getListReturn" wsdl:path="Commodity/artnr"/>
+        <var name="?category" wsdl:part="getListReturn" wsdl:path="Commodity/category" />
+        <var name="?name" wsdl:part="getListReturn" wsdl:path="Commodity/name" />
+        <var name="?price" wsdl:part="getListReturn" wsdl:path="Commodity/priceEuro"/>
+        <var name="?stock" wsdl:part="getListReturn" wsdl:path="Commodity/stock"/>        
+      </output>
+      <knowledge-effect>
+        <forall> 
+          <var name="?item" />
+          <and>
+            <s:in-catalog vendor="service2" item="?item" />
+            <s:has-title item="?item" title="?name" />
+            <s:price-at vendor="service2" item="?item" price="?price" />
+          </and>
+        </forall>
+      </knowledge-effect>
+    </op-def>   
+
+    <!-- 
+      this operation is incompletely defined. It ignores the fact that the output
+      depends on the pattern (e.g. keywords) provided. Instead the semantic of this
+      markup equals 'list'.
+
+    <op-def name="findProduct" wsdl:portType="MegashopService">
+      <input>
+        <var name="?pattern" wsdl:part="pattern"/>
+      </input>
+      <output>
+        <var name="?item" wsdl:part="getListReturn" wsdl:path="Commodity" />
+        <var name="?artnr" wsdl:part="getListReturn" wsdl:path="Commodity/artnr"/>
+        <var name="?category" wsdl:part="getListReturn" wsdl:path="Commodity/category" />
+        <var name="?name" wsdl:part="getListReturn" wsdl:path="Commodity/name" />
+        <var name="?price" wsdl:part="getListReturn" wsdl:path="Commodity/price" 
+        <var name="?stock" wsdl:part="getListReturn" wsdl:path="Commodity/stock" 
+             owl:isProperty="s:desc" owl:of="?item"/>        
+      </output>
+    </op-def>
+    -->
+
+    <op-def name="addToCart" wsdl:portType="GigashopService">
+      <input>
+        <var name="?sid" wsdl:part="sid" />        
+        <var name="?item" wsdl:part="itemNr"/>
+      </input>
+      <precondition>
+        <and>
+          <s:active-session client="client" server="service2" sid="?sid" />
+          <s:in-catalog vendor="service2" item="?item" />
+        </and>
+      </precondition>
+      <output>
+        <var name="?result" wsdl:part="purchaseCommodityReturn"/>
+      </output>
+      <effect>
+        <s:in-cart client="client" service="service2" item="?item" />
+      </effect>
+    </op-def>    
+    
+    <!--
+    <op-def name="removeFromCart" wsdl:portType="MegashopService">
+      <input>
+        <var name="?sid" wsdl:part="sid" />              
+        <var name="?pos" wsdl:part="pos"/>
+      </input>
+      <precondition>
+        (and (s:active-session ?client service2 ?sid)
+             (s:in-cart client service2 ?item ?pos))
+      </precondition>
+      <output>
+        <var name="?result" wsdl:part="purchaseCommodityReturn"/>
+      </output>
+      <effect>
+        (not (s:in-cart client service2 ?item))
+      </effect>
+    </op-def>        
+    -->
+    
+    <!-- this op requires local calculation
+VARIANT A - production rule semantics
+    
+    we could achieve similar effect more easily by simply returning a list 
+         of purchased goods        
+    <op-def name="checkOut" wsdl:portType="GigashopService">
+      <input>
+        <var name="?sid" wsdl:part="sid" />        
+        <var name="?cc" wsdl:part="ccNr" />
+        <var name="?ccexp" wsdl:part="ccExpDate" />
+      </input>
+      <precondition>
+        <and>
+          <s:active-session client="client" server="service2" sid="?sid" />
+          <s:have-creditcard nr="?cc" expires="?ccexp"/>
+        </and>
+      </precondition>
+      <output>
+        <var name="?result" wsdl:part="purchaseCommodityReturn"/>
+      </output>
+      <effect>
+        <success-condition lang="beanshell">
+          "SUCC".equals(output.get("?result"))
+        </success-condition>            
+        <forall>
+          <var name="?item" />
+          <when>
+            <s:in-cart client="client" service="service2" item="?item"/>
+            <and>
+              <s:possess owner="client" item="?item" />
+              <not>
+                <s:in-cart client="client" service="service2" item="?item"/>
+              </not>
+            </and>
+          </when>
+        </forall>
+      </effect>
+    </op-def>      
+     -->
+    
+     
+    <op-def name="checkOut" wsdl:portType="GigashopService">
+      <input>
+        <var name="?sid" wsdl:part="sid" />        
+        <var name="?cc" wsdl:part="ccNr" />
+        <var name="?ccexp" wsdl:part="ccExpDate" />
+      </input>
+      <precondition>
+        <and>
+          <s:active-session client="client" server="service2" sid="?sid" />
+          <s:have-creditcard nr="?cc" expires="?ccexp"/>
+        </and>
+      </precondition>
+      <output>
+        <var name="?item" wsdl:part="checkOutReturn" wsdl:path="CartEntry/item" />
+      </output>
+      <effect>
+           
+        <forall>
+          <var name="?item" />
+          <when>
+            <s:in-cart client="client" service="service2" item="?item"/>
+            <and>
+              <s:possess owner="client" item="?item" />
+              <not>
+                <s:in-cart client="client" service="service2" item="?item"/>
+              </not>
+            </and>
+          </when>
+        </forall>
+      </effect>
+    </op-def>    
+     
+  </functional-profile> 
+</service-annotation>

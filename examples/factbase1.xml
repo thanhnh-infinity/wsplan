@@ -1,0 +1,10 @@
+ <knowledge-base xmlns:pr="http://foo.com/preds#">
+		<fact>(pr:personal-data firstname joachim)</fact>
+		<fact>(pr:personal-data lastname peer)</fact>
+		<fact>(pr:personal-data address stgallen)</fact>
+		<fact>(pr:personal-data country switzerland)</fact>
+    <fact>(pr:username site001 joepeer)</fact>
+    <fact>(pr:password site001 secret123)</fact>
+		<fact>(pr:creditcard num_34324343 neverever)</fact>
+		<fact>(pr:have-creditcard num_34324343 neverever)</fact>
+ </knowledge-base>

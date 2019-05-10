@@ -1,0 +1,116 @@
+<!--
+$Header: /cvsroot/wsplan/wsplan/build.xml,v 1.4 2004/12/01 16:14:39 joepeer Exp $
+-->
+
+<project name="wsplan" default="dist" basedir=".">
+
+  <property name="root.dir" value="."/>     
+  <property name="src.dir" value="${root.dir}/src" />
+  <property name="dist.dir" value="${root.dir}/dist" />
+  <property name="build.dir" value="${root.dir}/build" />
+  <property name="lib.dir" value="${root.dir}/lib" />
+  <property name="doc.dir" value="${root.dir}/doc" />
+  <property name="api.doc.dir" value="${doc.dir}/apidoc" />
+  <!-- change this property to point to your JAVACC distro -->
+  <property name="javacc.home" value="d:/javacc-3.2" />
+  <property name="release.dir" value="d:/temp/wsplan-rel" />  
+
+  <path id="compile.classpath">    
+    <fileset dir="${lib.dir}">
+      <include name="*.jar"/>
+    </fileset>  
+  </path>    
+
+  <!-- delete old class files -->
+  <target name="clean">
+    <delete dir="${build.dir}/org"/>
+    <delete dir="${dist.dir}"/> 
+  </target>
+  
+  <!-- generate PDDL parser -->
+  <target name="parser">
+    <javacc 
+        target="${src.dir}/org/mcm/sws/pddl/formulae.jj" 
+        outputdirectory="${src.dir}/org/mcm/sws/pddl"
+        javacchome="${javacc.home}" 
+        />
+  </target>   
+
+  <!-- compile all project (java) files,
+       copy to build.dir -->
+  <target name="compile" depends="parser, clean">
+    <mkdir dir="${build.dir}"/>
+    <javac srcdir="${src.dir}"      
+        destdir="${build.dir}"
+        debug="on"
+        deprecation="on"   
+        includes="**">
+      <classpath refid="compile.classpath"/>        
+    </javac> 
+  </target>
+
+  <!-- create a jar archive file in dist.dir -->
+  <target name="dist" depends="compile">
+      <!-- <copy file="${src.dir}/log4j.properties" todir="${build.dir}"/> -->  
+      <mkdir dir="${dist.dir}"/>
+      <jar destfile="${dist.dir}/wsplan.jar"
+       basedir="${build.dir}"
+    />
+  </target>
+       
+  <target name="javadoc" depends="compile">
+    <javadoc packagenames="org.mcm.sws,org.mcm.sws.annotation,org.mcm.sws.exampes,org.mcm.sws.pddl,org.mcm.sws.planners,org.mcm.sws.process,org.mcm.sws.strategy,org.mcm.sws.test,org.mcm.sws.ui,org.mcm.sws.util,org.mcm.sws.wsdl,org.mcm.sws.xmlschema,org.mcm.sws.xmlschema.facets,org.mcm.sws.test"
+             sourcepath="${src.dir}"
+             destdir="${api.doc.dir}"
+             author="true"
+             version="true"
+             use="true"
+             windowtitle="WSPlan">
+      <doctitle><![CDATA[<h1>WSPlan</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2004 Joachim Peer,  <b>=mcm</b><i>institute</i>, St. Gallen.</i>]]></bottom>
+    </javadoc>  
+  </target>
+  
+  <!-- create releasefiles, one zip file with dos/win lineends, one tgz file with *nix lineends: -->
+  <target name="release" depends="dist,javadoc" description="--&gt; Create zip and tgz release files">
+    <tstamp />
+    <property name="wsplan.releaseName" value="0.6_${DSTAMP}" />
+    <property name="wsplan.releaseDir" value="${release.dir}/wsplan_${wsplan.releaseName}" />
+    <property name="wsplan.zipfilename" value="${release.dir}/wsplan_${wsplan.releaseName}.zip" />
+    <property name="wsplan.tarfilename" value="${release.dir}/wsplan_${wsplan.releaseName}.tar" />
+    <property name="wsplan.tgzfilename" value="${release.dir}/wsplan_${wsplan.releaseName}.tgz" />
+    <!-- temporary directory for release files: -->
+    <delete dir="${wsplan.releaseDir}" />
+    <mkdir dir="${wsplan.releaseDir}" />
+    <!-- copy all files needed to release directory -->
+    <copy todir="${wsplan.releaseDir}">    
+      <fileset dir="." includes="TODO   build.xml  shopping0.bat  shopping2.bat INSTALL  log4j.properties  shopping1.bat" />
+      <fileset dir="." includes="doc/**/*.html,doc/**/*.png,doc/**/*.gif,doc/**/*.jpg,doc/**/*.txt,doc/**/*.pdf,doc/**/*.css" />
+      <fileset dir="." includes="dist/*.jar" />
+      <fileset dir="." includes="examples/**/*.xml" />
+      <fileset dir="." includes="lib/**/*.jar" />      
+      <fileset dir="." includes="src/org/**/*.java,src/org/**/*.properties,src/org/**/*.xsd,src/org/**/*.xml" />
+    </copy>
+    <!-- modify all text files to have dos/win lineends -->
+    <property name="textfiles.patterns" value="**/*.html,**/*.xml,**/*.java,**/*.txt,**/*.properties,**/*.xsd,**/*.xsl,**/*.bat,**/*.sh, Change*,CommonMistakes,Todo" />
+    <echo message="modifying temporary files to contain dos/win lineends" />
+    <fixcrlf srcDir="${wsplan.releaseDir}" eol="crlf" includes="${textfiles.patterns}" />
+    <!-- create zip release: -->
+    <delete file="${wsplan.zipfilename}" />
+    <zip destfile="${wsplan.zipfilename}">
+      <zipfileset dir="${release.dir}" includes="wsplan_${wsplan.releaseName}/**" />
+    </zip>
+    <!-- modify all text files to have unix lineends -->
+    <echo message="modifying temporary files to contain *nix/linux lineends" />
+    <fixcrlf srcDir="${wsplan.releaseDir}" eol="lf" includes="${textfiles.patterns}" />
+    <!-- create tar release  -->
+    <delete file="${wsplan.tarfilename}" />
+    <tar destfile="${wsplan.tarfilename}">
+      <tarfileset dir="${release.dir}" includes="wsplan_${wsplan.releaseName}/**" />
+    </tar>
+    <!-- compress tarfile using gzip, delete intermediate tar file: -->
+    <gzip zipfile="${wsplan.tgzfilename}" src="${wsplan.tarfilename}" />
+    <delete file="${wsplan.tarfilename}" />
+  </target>  
+  
+</project>

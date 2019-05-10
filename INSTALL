@@ -1,0 +1,74 @@
+$Header: /cvsroot/wsplan/wsplan/INSTALL,v 1.3 2004/12/01 16:14:39 joepeer Exp $
+
+
+INSTALLING AND & RUNNING WSPLAN
+================================
+
+0. PREREQUISTITES
+====================
+
+- Java Development Kit 1.4 or higher
+- GNU C++ compatible build environment (e.g. Linux, Windows+CYGWIN)
+
+
+1. Install Web-VHPOP
+=====================
+
+* download Web-VHPOP from http://sourceforge.net/projects/wsplan and extract the package to a folder $VHPOP
+
+* point your command line interpreter to $VHPOP
+(Windows users need to use CYGWIN, available for free at http://www.cygwin.com)
+
+run:
+./configure
+./make
+./make install
+
+
+2. Install WSPlan
+===================
+
+* extract the WSPLAN package downloaded from http://sourceforge.net/projects/wsplan to some directory $WSPLAN
+
+3. Configure WSPLAN 
+====================
+
+Each scenario has its own configuration file. Among the definitions, the path to the VHPOP startup script is defined in a <planner> element. Edit the definitions in the $WSPLAN/examplex/config-* files to match your configuration:
+
+  <planner name="VHPOP" features="strips, types"  isDefault="true">
+    <param name="class" value="org.mcm.sws.planners.VHPOPPlanner"/>
+    <!-- change to script on your system -->
+    <param name="path" value="d:\cygwin\home\_jpeer\vhpop-2.2\vhpop.bat"/>
+    <!-- change to a temp directory on your system -->
+    <param name="temp-dir" value="d:\pf\examples\tmp"/>
+  </planner>  
+  
+  
+3. Check availability of Web Services 
+========================================
+
+either use the publicly available services deployed at 
+http://elektra.mcm.unisg.ch:8080/axis
+
+or 
+
+download the WSE (web service example) package from http://sourceforge.net/projects/wsplan and follow the instruction in that package to deploy the services locally. 
+
+
+4. Run:
+===========
+
+there are currently 3 examples which can be run; run them by invoking
+
+$WSPLAN/shopping0.bat
+$WSPLAN/shopping1.bat
+$WSPLAN/shopping2.bat
+ (or *.sh, respectively)
+ 
+wait until the GUI is loaded and the hit the "PLAN" button
+ 
+ 
+5. Problems?
+=============
+
+please send the problem or bug report to: <joachim.peer@unisg.ch>

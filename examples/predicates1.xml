@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<!DOCTYPE Definitions [
+    <!ENTITY foo  'http://foo.com/preds#'>
+    <!ENTITY pddl  'http://foo.com/pddl#'>		
+]>
+
+<Definitions targetNamespace="&foo;">
+
+	<!-- (personal-data firstname ?firstname) -->
+
+  <Predicate name="personal-data">
+    <parameter name="property" />
+    <parameter name="value" />
+  </Predicate>
+
+	
+	<!-- (username site02 ?username) -->
+
+  <Predicate name="username">
+    <parameter name="site"/>
+    <parameter name="uid" />
+  </Predicate>
+	
+	<!-- (password site02 ?password) -->
+
+  <Predicate name="password">
+    <parameter name="site"/>
+    <parameter name="pwd"/>
+  </Predicate>
+	
+	
+	<!-- (session-ID site02 ?sid) -->
+
+  <Predicate name="session-ID">
+    <parameter name="site" />
+    <parameter name="sid" />
+  </Predicate>
+	
+	<!-- (in-stock ?shirt) -->
+
+  <Predicate name="in-stock">
+    <parameter name="shirt"/>
+  </Predicate>
+	
+	<!-- (property ?shirt nr ?nr) -->
+
+  <Predicate name="property">
+    <parameter name="subj" />
+    <parameter name="pred" />
+		<parameter name="obj" />
+  </Predicate>
+	
+	<!-- (creditcard ?ccnr ?ccexp) -->
+
+  <Predicate name="creditcard">
+    <parameter name="cardno" />
+    <parameter name="expire" />
+  </Predicate>
+	
+	<!-- (possess ?shirt) -->
+
+  <Predicate name="possess">
+    <parameter name="item"/>
+  </Predicate>
+
+<!--
+  <Function name="available-money" />
+    
+  <Function name="fuel">
+    <parameter name="v" type="&pddl;Vehicle"/>
+  </Function>
+-->  
+</Definitions>

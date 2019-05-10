@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<!DOCTYPE Definitions [
+    <!ENTITY foo  'http://foo.com/preds#'>    
+]>
+
+<Definitions targetNamespace="&foo;">
+
+  <Predicate name="in-catalog">
+    <parameter name="vendor" />  
+    <parameter name="item" />
+  </Predicate>
+
+  <Predicate name="has-ean">
+    <parameter name="item" />
+    <parameter name="ean" />
+  </Predicate>
+
+ <Predicate name="has-price">
+    <parameter name="vendor" />
+    <parameter name="item" />		
+    <parameter name="price" />
+  </Predicate>
+
+  
+  
+  <Predicate name="has-title">
+    <parameter name="item" />
+    <parameter name="title" />
+  </Predicate>
+
+  <Predicate name="has-description">
+    <parameter name="item" />
+    <parameter name="description" />
+  </Predicate>  
+
+  <Predicate name="have-creditcard">
+    <parameter name="nr" />
+    <parameter name="expires" />
+  </Predicate>  
+
+  <Predicate name="price-at">
+    <parameter name="vendor" />
+    <parameter name="item" />
+    <parameter name="price" />    
+  </Predicate>  
+
+  <Predicate name="possess">
+    <parameter name="owner" />  
+    <parameter name="item" />
+  </Predicate>
+  
+  <Predicate name="possessn">
+    <parameter name="client" />  
+    <parameter name="item" />
+    <parameter name="count" />    
+  </Predicate>  
+  
+  <Predicate name="user-credentials">
+    <parameter name="client" /> 
+    <parameter name="server" />
+    <parameter name="username" />
+    <parameter name="password" />    
+  </Predicate>  
+  
+  <Predicate name="active-session">
+    <parameter name="client" /> 
+    <parameter name="server" />
+    <parameter name="sid" />    
+  </Predicate>
+  
+  <Predicate name="in-cart">
+    <parameter name="client" /> 
+    <parameter name="service" />
+    <parameter name="item" />
+    <!-- <parameter name="cnt"/> -->     
+  </Predicate>  
+  
+  <Predicate name="personal-data">
+    <parameter name="key" />  
+    <parameter name="data" />   
+  </Predicate>    
+  
+</Definitions>

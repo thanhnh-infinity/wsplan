@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsplan-config xmlns:pr="http://foo.com/preds#">
+
+  <service-descriptions>    
+    <wsdl-file>http://sws.mcm.unisg.ch:8080/axis/services/GigashopService?wsdl</wsdl-file>
+    <annotation-file>http://elektra.mcm.unisg.ch/wsplan/examples/gigashop_anno2_xml.xml</annotation-file>  
+
+    <wsdl-file>http://sws.mcm.unisg.ch:8080/axis/services/MegashopService?wsdl</wsdl-file>
+    <annotation-file>http://elektra.mcm.unisg.ch/wsplan/examples/megashop_anno2_xml.xml</annotation-file>      
+  </service-descriptions>
+  
+  <fact-file>http://elektra.mcm.unisg.ch/wsplan/examples/facts_shopping.xml</fact-file>
+  
+  <goal>achieve(pr:possess owner=client item=123456)</goal>  
+  
+  <planning-strategy>org.mcm.sws.strategy.ExecutionMonitoringReplanning</planning-strategy>
+
+  <planner name="FF-METRIC" features="strips, types, numeric">
+    <param name="class" value="org.mcm.sws.planners.FFMetricPlanner"/>
+    <param name="path" value="path_to_ff"/>
+    <param name="temp-dir" value="d:\temp\"/>
+  </planner>
+  
+  <planner name="VHPOP" features="strips, types"  isDefault="true">
+    <param name="class" value="org.mcm.sws.planners.VHPOPPlanner"/>
+    <param name="path" value="d:\cygwin\home\_jpeer\vhpop-2.2\vhpop.bat"/>
+    <param name="temp-dir" value="d:\pf\examples\tmp"/>
+  </planner>  
+  
+</wsplan-config>

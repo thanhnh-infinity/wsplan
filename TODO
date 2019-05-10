@@ -1,0 +1,22 @@
+$Header: /cvsroot/wsplan/wsplan/TODO,v 1.2 2004/12/01 16:14:39 joepeer Exp $
+
+
+TO DO
+========
+
+* when possible, execute parallel plan fragements in parallel, not linearized
+
+* clean interface (en/de-coding) to planner (e.g. numbers, etc)
+
+* requirements for operations, services
+and requirement profiles of planners => dynamic use of planners!
+
+* find a way to figure out the possibly useful services, maybe through relaxed graphs (i.e no precond.)?
+  in order to be able to figure out the sum of requirements of these op's
+	
+* write out ALL objects to the :objects section in problem files -- including those from the fact base!s
+
+* add preprocessing step for ontology alignment
+
+
+ 

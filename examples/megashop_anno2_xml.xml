@@ -1,0 +1,74 @@
+<service-annotation 
+  xmlns:wsdl="http://schemata.org/sws/wsdl" 
+  xmlns:s="http://foo.com/preds#"
+  url="http://sws.mcm.unisg.ch:8080/axis/services/MegashopService?wsdl"
+  targetNamespace="http://sws.mcm.unisg.ch:8080/axis/services/MegashopService/"
+  serviceNamespace="http://sws.mcm.unisg.ch:8080/axis/services/MegashopService/"
+  serviceName="MegashopServiceService"
+  xmlns="http://schemata.org/sws/sesma">
+
+  <import-voc url="http://elektra.mcm.unisg.ch/wsplan/examples/preds_shopping.xml"/>
+  
+  <functional-profile>
+    <!-- buy an item -->
+    <op-def name="buyItem" wsdl:portType="MegashopService">
+      <input>
+        <var name="?item" wsdl:part="ean"/>      
+        <var name="?cc" wsdl:part="ccNr" />
+        <var name="?ccexp" wsdl:part="ccExpDate" />
+      </input>
+      <precondition>
+        <and>
+          <s:have-creditcard nr="?cc" expires="?ccexp"/>
+          <s:in-catalog vendor="somedotcom" item="?item"/>
+        </and>
+      </precondition>
+      <output>
+        <var name="?result" wsdl:part="buyItemReturn"/>
+      </output>
+      <effect>
+        <!-- to be checked after invocation -->
+        <success-condition lang="beanshell">
+        !("no".equals(output.get("?result")))
+        </success-condition>
+      
+        <!-- the desired effect -->
+        <s:possess owner="client" item="?item"/>
+      </effect>
+    </op-def>
+    
+    <!-- get price quote -->
+    <op-def name="getPrice" wsdl:portType="MegashopService">
+      <input>
+        <var name="?item" wsdl:part="ean" />
+      </input>
+      <output>
+        <var name="?p" wsdl:part="getPriceReturn"/>
+      </output>
+      <knowledge-effect> 
+        <s:price-at vendor="somedotcom" item="?item" price="?p" />
+      </knowledge-effect>
+    </op-def>
+    
+    <!-- retrieve content of product catalog -->
+
+    <op-def name="getItemList" wsdl:portType="MegashopService">
+      <output>
+        <var name="?item" wsdl:part="getItemListReturn" wsdl:path="Item/ean"/>
+        <var name="?title" wsdl:part="getItemListReturn" wsdl:path="Item/title" />
+        <var name="?desc" wsdl:part="getItemListReturn" wsdl:path="Item/description"/>
+      </output>
+      <knowledge-effect>
+        <forall>
+          <var name="?item" />
+          <and>
+            <s:in-catalog vendor="somedotcom" item="?item" />           
+            <s:has-title item="?item" title="?title" />
+            <s:has-description item="?item" description="?desc" />            
+          </and>
+        </forall>
+      </knowledge-effect>
+    </op-def>
+    
+  </functional-profile> 
+</service-annotation>
